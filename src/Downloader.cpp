@@ -356,11 +356,12 @@ void Downloader::metaDataChanged()
    if (variant.isValid())
    {
       QString contentDisposition = QByteArray::fromPercentEncoding(variant.toByteArray()).constData();
-      QRegularExpression regExp("filename=(\S+)");
+      // content disposition regexp from here: https://stackoverflow.com/a/57589181
+      static QRegularExpression regExp(R"(filename[^;\n]*=\s*(UTF-\d['"]*)?((['"]).*?[.]$\2|[^;\n]*)?)");
       QRegularExpressionMatch match = regExp.match(contentDisposition);
       if (match.hasMatch())
       {
-         filename = match.captured(1);
+         filename = match.captured(2);
       }
       setFileName(filename);
    }
